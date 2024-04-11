@@ -1,5 +1,6 @@
 // Импорт необходимых функций и данных из внешних модулей и файлов
-import { initialCards, createCard, deleteCard } from "./scripts/cards.js";
+import { initialCards } from "./scripts/cards.js";
+import { createCard, deleteCard } from "./scripts/card.js";
 import { closeModal, openModal } from "./scripts/modal.js";
 
 // Импорт файла CSS для стилизации
@@ -9,30 +10,44 @@ import "./pages/index.css";
 const popups = document.querySelectorAll(".popup");
 const popupTypeEdit = document.querySelector(".popup_type_edit");
 const popupTypeNewCard = document.querySelector(".popup_type_new-card");
-const stopClose = document.querySelectorAll(".popup__content");
+const popupContentElements = document.querySelectorAll(".popup__content");
 const imageContainerCard = document.querySelector(".popup__image");
 const popupTypeImage = document.querySelector(".popup_type_image");
 const cardContainer = document.querySelector(".places__list");
+//
+const profileEditButton = document.querySelector(".profile__edit-button");
+const profileAddButton = document.querySelector(".profile__add-button");
+//
+const profileTitle = document.querySelector(".profile__title");
+const popupInputTypeName = document.querySelector(".popup__input_type_name");
+//
+const popupInputTypeJob = document.querySelector(".popup__input_type_description");
+const profileDescription = document.querySelector(".profile__description");
+//
+const popupInpuTypeCardName = document.querySelector(".popup__input_type_card-name");
+const popupInputTypeUrl = document.querySelector(".popup__input_type_url");
+//
+const atributeNameEditProfile = document.querySelector('[name="edit-profile"]');
+const atributeNameNewPlace = document.querySelector('[name="new-place"]');
+
+// получаю начальные значения для полей ввода попапа редактирующего профиль
+popupInputTypeName.value = profileTitle.textContent;
+popupInputTypeJob.value = profileDescription.textContent;
 
 // Определение функции для открытия модального окна с изображением при клике на изображение
 const openPopupOnImageClick = (event) => {
   openModal(popupTypeImage);
   imageContainerCard.src = event.target.src;
 };
+
 // Определение функции для добавления обработчика событий клика к элементам
 const addClickListener = (element, popup) => {
   element.addEventListener("click", () => openModal(popup));
 };
 
 // Добавление обработчиков событий для кнопок редактирования профиля и добавления карточки для открытия соответствующих модальных окон
-addClickListener(
-  document.querySelector(".profile__edit-button"),
-  popupTypeEdit
-);
-addClickListener(
-  document.querySelector(".profile__add-button"),
-  popupTypeNewCard
-);
+addClickListener(profileEditButton, popupTypeEdit);
+addClickListener(profileAddButton, popupTypeNewCard);
 
 // Определение функций для обработки отправки формы и обновления информации профиля
 const addSubmitHandler = (form, popup, submitHandler) => {
@@ -42,57 +57,35 @@ const addSubmitHandler = (form, popup, submitHandler) => {
   });
 };
 
-// Определение функции для обработки отправки формы при добавлении нового места и создания новой карточки
 const handleEditProfileSubmit = (popup) => {
-  document.querySelector(".profile__title").textContent =
-    document.querySelector(".popup__input_type_name").value;
-  document.querySelector(".profile__description").textContent =
-    document.querySelector(".popup__input_type_description").value;
+  profileTitle.textContent = popupInputTypeName.value;
+  profileDescription.textContent = popupInputTypeJob.value;
   closeModal(popup);
 };
 
+// Определение функции для обработки отправки формы при добавлении нового места и создания новой карточки
 const handleNewPlaceSubmit = (popup) => {
-  const { value: name } = document.querySelector(
-    ".popup__input_type_card-name"
-  );
-  const { value: link } = document.querySelector(".popup__input_type_url");
+  const { value: name } = popupInpuTypeCardName;
+  const { value: link } = popupInputTypeUrl;
   cardContainer.prepend(
     createCard({ name, link }, deleteCard, openPopupOnImageClick)
   );
   closeModal(popup);
+  return (popupInpuTypeCardName.value = ""), (popupInputTypeUrl.value = "");
 };
 
 // Добавление обработчиков событий отправки формы для редактирования профиля и добавления нового места
-addSubmitHandler(
-  document.querySelector('[name="edit-profile"]'),
-  popupTypeEdit,
-  handleEditProfileSubmit
-);
-addSubmitHandler(
-  document.querySelector('[name="new-place"]'),
-  popupTypeNewCard,
-  handleNewPlaceSubmit
-);
+addSubmitHandler(atributeNameEditProfile, popupTypeEdit, handleEditProfileSubmit);
+addSubmitHandler(atributeNameNewPlace, popupTypeNewCard, handleNewPlaceSubmit);
 
 // Предотвращение закрытия модальных окон при клике внутри контента модального окна
-stopClose.forEach((evt) => {
+popupContentElements.forEach((evt) => {
   evt.addEventListener("click", (event) => event.stopPropagation());
 });
 
-// Добавление обработчиков событий для закрытия модальных окон при клике на фон, нажатии Escape или клике на кнопку закрытия
+/// Добавление класса "popup_is-animated" для плавного открытия и закрытия модальных окон при клике
 popups.forEach((popup) => {
-  const buttonCloseModal = popup.querySelector(".popup__close");
   popup.classList.add("popup_is-animated");
-
-  const closePopup = () => closeModal(popup);
-
-  document.addEventListener(
-    "keydown",
-    (event) => event.key === "Escape" && closePopup()
-  );
-
-  popup.addEventListener("click", closePopup);
-  buttonCloseModal.addEventListener("click", closePopup);
 });
 
 // Перебор данных начальных карточек, создание элементов карточек и их добавление в контейнер
