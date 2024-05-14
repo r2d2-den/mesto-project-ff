@@ -1,6 +1,5 @@
 // Функция обработки клика по кнопке лайка
 const handleLikeButtonClick = (e) => e.target.classList.toggle("card__like-button_is-active")
-
 // Функция создания карточки
 export function createCard(data, deleteCallback, openImagePopup) {
   const cardClone = document
@@ -21,6 +20,5 @@ export function createCard(data, deleteCallback, openImagePopup) {
   imagesCard.addEventListener("click", openImagePopup);
   return cardClone;
 }
-
 // Функция удаления карточки
 export const deleteCard = (cardClone) => cardClone.remove();
