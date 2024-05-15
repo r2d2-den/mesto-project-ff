@@ -24,6 +24,8 @@ const popupInputTypeUrl = document.querySelector(".popup__input_type_url");
 const atributeNameEditProfile = document.querySelector('[name="edit-profile"]');
 const atributeNameNewPlace = document.querySelector('[name="new-place"]');
 const closeButtons = document.querySelectorAll(".popup__close");
+const popupCaption = document.querySelector('.popup__caption');
+
 
 // функция добавления слушателя на кнопки закрытия модальных окон
 const addClickListenerButtonClose = (elem) => {
@@ -33,20 +35,23 @@ const addClickListenerButtonClose = (elem) => {
     });
   });
 };
+addClickListenerButtonClose(popupTypeImage);
+addClickListenerButtonClose(popupTypeEdit);
+addClickListenerButtonClose(popupTypeNewCard);
+
 
 // Определение функции для открытия модального окна с изображением при клике на изображение
 const openPopupOnImageClick = (event) => {
   openModal(popupTypeImage);
   imageContainerCard.src = event.target.src;
-  imageContainerCard.alt = event.target.alt;
-  imageContainerCard.textContent = event.target.name;
-  addClickListenerButtonClose(popupTypeImage);
+  imageContainerCard.alt, popupCaption.textContent = event.target.alt;
+  
+
 };
 
 // Определение функции для добавления обработчика событий клика к элементам
 const addClickListener = (element, popup) => {
   element.addEventListener("click", () => openModal(popup));
-  addClickListenerButtonClose(popup);
   if( popup === popupTypeEdit){
     popupInputTypeName.value = profileTitle.textContent;
     popupInputTypeJob.value = profileDescription.textContent;
@@ -79,16 +84,11 @@ const handleNewPlaceSubmit = (popup) => {
     createCard({ name, link }, deleteCard, openPopupOnImageClick)
   );
   closeModal(popup);
-  return (popupInpuTypeCardName.value = ""), (popupInputTypeUrl.value = "");
+  atributeNameNewPlace.reset();
 };
 
 // Добавление обработчиков событий отправки формы для редактирования профиля и добавления нового места
-addSubmitHandler(
-  atributeNameEditProfile,
-  popupTypeEdit,
-  handleEditProfileSubmit
-);
-
+addSubmitHandler(atributeNameEditProfile, popupTypeEdit,handleEditProfileSubmit);
 addSubmitHandler(atributeNameNewPlace, popupTypeNewCard, handleNewPlaceSubmit);
 
 /// Добавление класса "popup_is-animated" для плавного открытия и закрытия модальных окон при клике
