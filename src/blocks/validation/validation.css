@@ -1,0 +1,16 @@
+.popup__input_type_error {
+  border-block-end: 1px solid red;
+}
+
+.popup__error_visible{
+  color: red;
+}
+
+.popup__input:focus{
+  outline-color: rgb(125, 174, 196);
+ outline-offset: 1px;
+}
+
+.popup__button_disabled{
+  background-color: rgb(75, 75, 75);
+}

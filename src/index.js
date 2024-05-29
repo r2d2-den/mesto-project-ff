@@ -2,6 +2,8 @@
 import { initialCards } from "./scripts/cards.js";
 import { createCard, deleteCard } from "./scripts/card.js";
 import { closeModal, openModal } from "./scripts/modal.js";
+import { enableValidation } from "./scripts/validation.js";
+import { clearValidation } from "./scripts/validation.js";
 
 // Импорт файла CSS для стилизации
 import "./pages/index.css";
@@ -26,6 +28,15 @@ const atributeNameNewPlace = document.querySelector('[name="new-place"]');
 const closeButtons = document.querySelectorAll(".popup__close");
 const popupCaption = document.querySelector('.popup__caption');
 
+// настройки валидации
+const config = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+}
 
 // функция добавления слушателя на кнопки закрытия модальных окон
 const addClickListenerButtonClose = (elem) => {
@@ -34,24 +45,27 @@ const addClickListenerButtonClose = (elem) => {
       closeModal(elem);
     });
   });
+
 };
 addClickListenerButtonClose(popupTypeImage);
 addClickListenerButtonClose(popupTypeEdit);
 addClickListenerButtonClose(popupTypeNewCard);
-
 
 // Определение функции для открытия модального окна с изображением при клике на изображение
 const openPopupOnImageClick = (event) => {
   openModal(popupTypeImage);
   imageContainerCard.src = event.target.src;
   imageContainerCard.alt, popupCaption.textContent = event.target.alt;
-  
-
 };
 
 // Определение функции для добавления обработчика событий клика к элементам
 const addClickListener = (element, popup) => {
-  element.addEventListener("click", () => openModal(popup));
+  element.addEventListener("click", () =>{
+    openModal(popup);
+    clearValidation(popup, config);
+    enableValidation(config); 
+  } );
+
   if( popup === popupTypeEdit){
     popupInputTypeName.value = profileTitle.textContent;
     popupInputTypeJob.value = profileDescription.textContent;
