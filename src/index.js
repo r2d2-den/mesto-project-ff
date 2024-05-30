@@ -4,6 +4,7 @@ import { createCard, deleteCard } from "./scripts/card.js";
 import { closeModal, openModal } from "./scripts/modal.js";
 import { enableValidation } from "./scripts/validation.js";
 import { clearValidation } from "./scripts/validation.js";
+import { mePromis, getAllCrds } from "./scripts/api.js";
 
 // Импорт файла CSS для стилизации
 import "./pages/index.css";
@@ -116,3 +117,12 @@ initialCards.forEach((cardData) =>
     createCard(cardData, deleteCard, openPopupOnImageClick)
   )
 );
+
+// вызовы с сервера
+// mePromis ()
+getAllCrds().then((data) => {
+data.forEach((element) => {
+  console.log(element)
+});
+});
+// apiCards()
