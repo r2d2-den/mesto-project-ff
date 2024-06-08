@@ -1,16 +1,28 @@
 .popup__input_type_error {
   border-block-end: 1px solid red;
+ 
 }
 
 .popup__error_visible{
   color: red;
+  font-size: 12px;
 }
 
 .popup__input:focus{
   outline-color: rgb(125, 174, 196);
  outline-offset: 1px;
+
 }
 
 .popup__button_disabled{
-  background-color: rgb(75, 75, 75);
+  background-color: rgb(255, 255, 255);
+  color: #8f8f8f;
+  border: 1px solid #b8b8b8;
+}
+
+.error-block-messeger{
+  padding-block-start: 8px;
+  min-height: 1.8rem;
+  display: block;
+  overflow: visible;
 }

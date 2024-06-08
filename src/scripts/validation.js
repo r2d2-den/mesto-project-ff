@@ -73,16 +73,35 @@ const toggleButtonState = (inputList, submitButton, config) => {
   }
 };
 
-// Функция для очистки валидации в модальном окне и дезактивации кнопки при пустых полях
+
+// функция очищающая поля ввода и текст ошибки
 export const clearValidation = (popup, config) => {
   const inputList = Array.from(popup.querySelectorAll(config.inputSelector));
   const submitButton = popup.querySelector(config.submitButtonSelector);
+
   inputList.forEach((input) => {
     if (input.value === "") {
       submitButton.disabled = true;
       submitButton.classList.add(config.inactiveButtonClass);
+      const errorElement = popup.querySelector(`.${input.id}-error`);
+      errorElement.textContent = "";
+      errorElement.classList.remove(config.errorClass);
+      input.classList.remove(config.inputErrorClass);
     } else if (!input.validity.valid) {
       input.value = "";
+      // Удаляем текст об ошибках
+      const errorElement = popup.querySelector(`.${input.id}-error`);
+      errorElement.textContent = "";
+      errorElement.classList.remove(config.errorClass);
+      input.classList.remove(config.inputErrorClass);
     }
   });
+
+  if (inputList.every((input) => input.value === "")) {
+    submitButton.disabled = true;
+    submitButton.classList.add(config.inactiveButtonClass);
+  } else {
+    submitButton.disabled = false;
+    submitButton.classList.remove(config.inactiveButtonClass);
+  }
 };
