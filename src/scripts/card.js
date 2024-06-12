@@ -1,6 +1,4 @@
-import {addLike, deleteLike} from "./api.js";
-
-
+import { addLike, deleteLike } from "./api.js";
 
 // Функция обработки клика по кнопке лайка
 const handleLikeButtonClick = (cardLikeButton, cardId, numbersLike) => {
@@ -27,22 +25,22 @@ const handleLikeButtonClick = (cardLikeButton, cardId, numbersLike) => {
   }
 };
 
-function checkLikeIsActive(userId, card, button,) { 
-  if (card.likes.some((like) => like._id === userId)) { 
-    button.classList.add("card__like-button_is-active"); 
-  } 
+function checkLikeIsActive(userId, card, button) {
+  if (card.likes.some((like) => like._id === userId)) {
+    button.classList.add("card__like-button_is-active");
+  }
 }
 
 function resetLike(number, text) {
-  if(number !== 0){
+  if (number !== 0) {
     text.textContent = number;
-    }else{
-      text.textContent = "";
-    }
+  } else {
+    text.textContent = "";
+  }
 }
 
 // Функция создания карточки
-export function createCard(data, openImagePopup, openPopupRemoveCard, userId) {
+export function createCard(data, openImagePopup, onDeleteCard, userId) {
   const cardClone = document
     .getElementById("card-template")
     .content.querySelector(".places__item")
@@ -51,7 +49,9 @@ export function createCard(data, openImagePopup, openPopupRemoveCard, userId) {
   const deleteButton = cardClone.querySelector(".card__delete-button");
   const titleCard = cardClone.querySelector(".card__title");
   const cardLikeButton = cardClone.querySelector(".card__like-button");
-  const numbersLike = cardClone.querySelector(".card__like-button__numbers-like");
+  const numbersLike = cardClone.querySelector(
+    ".card__like-button__numbers-like"
+  );
   const like = data.likes.length;
 
   imagesCard.src = data.link;
@@ -59,15 +59,16 @@ export function createCard(data, openImagePopup, openPopupRemoveCard, userId) {
   titleCard.textContent = data.name;
   numbersLike.textContent = like;
   resetLike(like, numbersLike);
-  if(data.owner._id!== userId){
-    deleteButton.style.display = 'none';
-
+  if (data.owner._id !== userId) {
+    deleteButton.style.display = "none";
   }
   checkLikeIsActive(userId, data, cardLikeButton);
-  cardLikeButton.addEventListener("click", () =>{
-    handleLikeButtonClick(cardLikeButton, data._id, numbersLike, data, userId) 
-  } );
-  deleteButton.addEventListener("click", () => openPopupRemoveCard(cardClone, data._id));
+  cardLikeButton.addEventListener("click", () => {
+    handleLikeButtonClick(cardLikeButton, data._id, numbersLike, data, userId);
+  });
+  deleteButton.addEventListener("click", () => {
+    onDeleteCard(data._id, cardClone);
+  });
   imagesCard.addEventListener("click", openImagePopup);
   return cardClone;
 }

@@ -1,44 +1,46 @@
 export function enableValidation(config) {
-  const {
-    formSelector, // Селектор формы
-    inputSelector, // Селектор полей ввода
-    submitButtonSelector, // Селектор кнопки отправки формы
-    inactiveButtonClass, // Класс для неактивной кнопки
-    inputErrorClass, // Класс ошибки для поля ввода
-    errorClass, // Класс ошибки
-  } = config;
-
-  const formList = Array.from(document.querySelectorAll(formSelector));
+  const formList = Array.from(document.querySelectorAll(config.formSelector));
 
   formList.forEach((formElement) => {
-    const inputList = Array.from(formElement.querySelectorAll(inputSelector));
-    const submitButton = formElement.querySelector(submitButtonSelector);
+    const inputList = Array.from(
+      formElement.querySelectorAll(config.inputSelector)
+    );
+
     formElement.addEventListener("submit", (evt) => {
       evt.preventDefault();
     });
+
     inputList.forEach((inputElement) => {
       inputElement.addEventListener("input", () => {
-        toggleButtonState(inputList, submitButton, config);
         validateInput(formElement, inputElement, config);
       });
     });
-    toggleButtonState(inputList, submitButton, config);
+
+    toggleButtonState(formElement, inputList[0], config);
   });
 }
 
-// Функция для валидации отдельного поля ввода
 const validateInput = (formElement, inputElement, config) => {
   if (inputElement.validity.patternMismatch) {
-    inputElement.setCustomValidity("Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы");
+    inputElement.setCustomValidity(
+      "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы"
+    );
   } else {
     inputElement.setCustomValidity("");
   }
 
   if (!inputElement.validity.valid) {
-    showInputError(formElement, inputElement, inputElement.validationMessage, config);
+    showInputError(
+      formElement,
+      inputElement,
+      inputElement.validationMessage,
+      config
+    );
   } else {
     hideInputError(formElement, inputElement, config);
   }
+
+  toggleButtonState(formElement, inputElement, config);
 };
 
 // Функция для отображения сообщения об ошибке в поле ввода
@@ -63,7 +65,12 @@ const hasInvalidInput = (inputList) => {
 };
 
 // Функция для управления состоянием кнопки отправки формы
-const toggleButtonState = (inputList, submitButton, config) => {
+const toggleButtonState = (formElement, inputElement, config) => {
+  const inputList = Array.from(
+    formElement.querySelectorAll(config.inputSelector)
+  );
+  const submitButton = formElement.querySelector(config.submitButtonSelector);
+
   if (hasInvalidInput(inputList)) {
     submitButton.classList.add(config.inactiveButtonClass);
     submitButton.disabled = true;
@@ -73,35 +80,18 @@ const toggleButtonState = (inputList, submitButton, config) => {
   }
 };
 
-
-// функция очищающая поля ввода и текст ошибки
+// Функция очищающая поля ввода и текст ошибки
 export const clearValidation = (popup, config) => {
   const inputList = Array.from(popup.querySelectorAll(config.inputSelector));
-  const submitButton = popup.querySelector(config.submitButtonSelector);
 
   inputList.forEach((input) => {
     if (input.value === "") {
-      submitButton.disabled = true;
-      submitButton.classList.add(config.inactiveButtonClass);
-      const errorElement = popup.querySelector(`.${input.id}-error`);
-      errorElement.textContent = "";
-      errorElement.classList.remove(config.errorClass);
-      input.classList.remove(config.inputErrorClass);
+      hideInputError(popup, input, config);
     } else if (!input.validity.valid) {
       input.value = "";
-      // Удаляем текст об ошибках
-      const errorElement = popup.querySelector(`.${input.id}-error`);
-      errorElement.textContent = "";
-      errorElement.classList.remove(config.errorClass);
-      input.classList.remove(config.inputErrorClass);
+      hideInputError(popup, input, config);
     }
   });
 
-  if (inputList.every((input) => input.value === "")) {
-    submitButton.disabled = true;
-    submitButton.classList.add(config.inactiveButtonClass);
-  } else {
-    submitButton.disabled = false;
-    submitButton.classList.remove(config.inactiveButtonClass);
-  }
+  toggleButtonState(popup, inputList[0], config);
 };
