@@ -106,10 +106,7 @@ const addSubmitHandler = (form, popup, submitHandler) => {
   });
 };
 
-// функция возвращающая в консоль текст ошибки
-const renderError = (item) => {
-  console.log(item);
-};
+let handleDeleteCardSubmitListener = null;
 
 const handleDeleteCard = (cardId, cardElement) => {
   cardForDelete = {
@@ -117,11 +114,21 @@ const handleDeleteCard = (cardId, cardElement) => {
     cardElement,
   };
   openModal(cardDeleteModalWindow);
-  cardDeleteModalWindow.addEventListener("submit", handleDeleteCardSubmit);
+
+  if (handleDeleteCardSubmitListener) {
+    cardDeleteModalWindow.removeEventListener("submit", handleDeleteCardSubmitListener);
+  }
+  handleDeleteCardSubmitListener = handleDeleteCardSubmit;
+  cardDeleteModalWindow.addEventListener("submit", handleDeleteCardSubmitListener);
 };
 
 const onDeleteCard = (cardId, cardElement) => {
   handleDeleteCard(cardId, cardElement);
+};
+
+// функция возвращающая в консоль текст ошибки
+const renderError = (item) => {
+  console.log(item);
 };
 
 const handleDeleteCardSubmit = (evt) => {
@@ -134,9 +141,15 @@ const handleDeleteCardSubmit = (evt) => {
       cardParent.removeChild(cardForDelete.cardElement);
       closeModal(cardDeleteModalWindow);
       cardForDelete = {};
+      cardDeleteModalWindow.removeEventListener("submit", handleDeleteCardSubmitListener);
+      handleDeleteCardSubmitListener = null;
     })
-    .catch((err) => {});
+    .catch((err) => {
+      renderError(`Ошибка: ${err}`);
+    });
 };
+
+
 
 // хендлер меняющий аватар пользователя
 const handleEditAvatarSubmit = (popup) => {
@@ -236,4 +249,7 @@ Promise.all([getUser(), getAllCrds()]).then(([userData, allCards]) => {
       createCard(cardData, openPopupOnImageClick, onDeleteCard, userId)
     );
   });
-});
+}
+) .catch((err) => {
+      renderError(`Ошибка: ${err}`);
+    });
